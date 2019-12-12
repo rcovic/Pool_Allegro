@@ -51,17 +51,17 @@
 //-----------------------------------------------------------------------------
 // BITMAP OBJECTS DECLARATION
 //-----------------------------------------------------------------------------
-extern BITMAP * parquet_bmp;	        //bitmap for the background
-extern BITMAP * pool_table_bmp;         //bitmap for the pool table
-extern BITMAP * ball_panel_bmp;         //bitmap for top and bot ball panel
-extern BITMAP* buffer_bmp;              //buffer bitmap
+extern BITMAP*   parquet_bmp;	        //bitmap for the background
+extern BITMAP*   pool_table_bmp;         //bitmap for the pool table
+extern BITMAP*   ball_panel_bmp;         //bitmap for top and bot ball panel
+extern BITMAP*  buffer_bmp;              //buffer bitmap
 //-----------------------------------------------------------------------------
 // FUNCTION DECLARATIONS
 //-----------------------------------------------------------------------------
-extern void init_game(void);
+extern  void init_game(void);
 //-----------------------------------------------------------------------------
 // TASK FUNCTION DECLARATIONS
 //-----------------------------------------------------------------------------
-extern void render_task(void);          //periodically draws on screen bitmaps
+extern  void render_task(void);          //periodically draws on screen bitmaps
 
 #endif
