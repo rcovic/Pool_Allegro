@@ -50,7 +50,59 @@ void init_bitmaps(void){
     buffer_bmp = create_bitmap(RES_X, RES_Y);
 }
 
+//-----------------------------------------------------------------------------
+// INIT_POOL_TABLE FUNCTION: calculate and stores all hole positins
+//-----------------------------------------------------------------------------
+void    init_pool_table(void)   {
+    int i;                          //hole index
 
+	for (i=0; i<N_HOLES; ++i) {
+		hole[i].x = (HOLE_X + HOLE_DISTANCE * (i % 3));
+		hole[i].y = (HOLE_Y + HOLE_DISTANCE * (i / 3));
+	}
+}
+//-----------------------------------------------------------------------------
+// SET_BALL_PARAMETERS FUNCTION: called when game starts or when a ball
+// is out of the game
+//-----------------------------------------------------------------------------
+void    set_ball_parameters(int x, int y, ball_struct* b) {
+    b->p.x = x;
+	b->p.y = y;
+	b->c.x = x +15;
+	b->c.y = y +15;
+	b->d.x = x;
+	b->d.y = y;
+	b->speed = 0;
+	b->alive = true;
+	b->still = true;
+}
+//-----------------------------------------------------------------------------
+// INIT_BALLS FUNCTION: calculate all ball positions and sets theirs parameters
+//-----------------------------------------------------------------------------
+void    init_balls() {
+    //local variables used to calculate next ball position
+	int     threshold = 1;
+	int     count = 0;
+	point   tmp;
+	tmp.x = BALL1_X;
+	tmp.y = BALL1_Y;
+    int     i;                      //ball index
+	set_ball_parameters(WHITE_X, WHITE_Y, &ball[0]);
+    
+    for (i=1; i<N_BALLS; ++i) {
+        if (count >= threshold) {
+	        threshold++;
+			count = 0;
+			tmp.x += BALLSIZE;
+			tmp.y += BALLSIZE/2;
+		}
+		if (i == 1)
+		    set_ball_parameters(BALL1_X,BALL1_Y,&ball[1]);
+		else
+			set_ball_parameters(tmp.x, tmp.y - count * BALLSIZE, &ball[i]);
+		count++;
+	}
+}
 //-----------------------------------------------------------------------------
 // INIT_GAME FUNCTION: calls all the INIT_FUNCTIONS when game starts
 //-----------------------------------------------------------------------------
