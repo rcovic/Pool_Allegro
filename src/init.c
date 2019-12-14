@@ -104,9 +104,26 @@ void    init_balls() {
 	}
 }
 //-----------------------------------------------------------------------------
+// INIT_USER FUNCTION: reset user status and cue parameters after each turn
+//-----------------------------------------------------------------------------
+void    init_user() {
+	user.state = 0;
+	user.aim_angle = 0;
+	user.cue_angle = 0;
+	user.wd = -30;
+	user.shot_power = 0;
+}
+//-----------------------------------------------------------------------------
+// INIT_USER_SCORES FUNCTION: set both user scores to 0
+//-----------------------------------------------------------------------------
+void    init_user_scores() {
+	user.p1_score = 0;
+	user.p2_score = 0;
+}
+//-----------------------------------------------------------------------------
 // INIT_GAME FUNCTION: calls all the INIT_FUNCTIONS when game starts
 //-----------------------------------------------------------------------------
-void init_game(void){
+void    init_game(void) {
     init_environment();
     init_bitmaps();
     init_pool_table();
@@ -114,3 +131,4 @@ void init_game(void){
     init_user();
     init_user_scores();
 }
+
