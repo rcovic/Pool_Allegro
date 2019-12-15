@@ -52,7 +52,7 @@
 #define     WHITE_Y         385         //y coordinate of white ball
 #define     BALL1_X         700         //x coordinate of ball 1
 #define     BALL1_Y         385         //y coordinate of ball 1
-#define     SPEED           8           //max speed of a ball
+#define     SPEED           20          //max speed of a ball
 //-----------------------------------------------------------------------------
 // USER CONSTANTS
 //-----------------------------------------------------------------------------
@@ -66,9 +66,13 @@
 //-----------------------------------------------------------------------------
 // SCHEDULER CONSTANTS
 //-----------------------------------------------------------------------------
-#define     P               20          //period time in milliseconds
-#define     RT              18          //run time in milliseconds
-#define     DL              18          //deadline in milliseconds
+#define     P               28          //period time in milliseconds
+#define     RT_R            5           //render_task run time in milliseconds
+#define     RT_B            23          //ball_task run time in milliseconds
+#define     RT_U            2           //user run time in milliseconds
+#define     DL_R            27          //render deadline in milliseconds
+#define     DL_B            26          //ball deadline in milliseconds
+#define     DL_U            28          //user deadline in milliseconds
 //-----------------------------------------------------------------------------
 // DATA STRUCTURES
 //-----------------------------------------------------------------------------
@@ -90,6 +94,12 @@ typedef struct  ball_struct {           //contains parameter of a ball
     double  speed;                      //current speed of ball
     bool    alive;                      //true if ball is still on the table
     bool    still;                      //true if ball is not moving
+    vector  ld;                         //storex x,y left direction of ball
+    vector  gd;                         //stores x,y gain direction of ball
+    double  sl;                         //speed left of ball after collision
+    double  sg;                         //speed gain of ball after collision
+    int     cf[N_BALLS];                //resolve compenetration bug
+    double  pd[N_BALLS];                //previous distance between balls
 }   ball_struct;
 
 typedef struct  user_struct {           //contain user states and cue params
@@ -118,6 +128,11 @@ extern  BITMAP*     buffer_bmp;         //buffer bitmap
 extern  point       hole[N_HOLES];      //contains coordinates of holes
 extern  ball_struct ball[N_BALLS];      //contains parameters of balls
 extern  user_struct user;               //contain user states and cue params
+//-----------------------------------------------------------------------------
+// SEMAPHORE DECLARATIONS
+//-----------------------------------------------------------------------------
+extern  sem_t       mutex;              //for mutual exclusion
+extern  sem_t       ball_sem[N_BALLS];  //for synchronize ball tasks
 //-----------------------------------------------------------------------------
 // FUNCTION DECLARATIONS
 //-----------------------------------------------------------------------------
