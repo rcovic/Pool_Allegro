@@ -50,4 +50,7 @@ There is no restriction on the type of balls you have to put in the holes, every
     *Note: To minimize the flickering effect, we create a buffer where we upload the whole constructed bitmap and then upload it to the screen buffer all at once.*
     - It displays the white ball's trajectory depending if amateur mode is on or off.
 
-![alt text](img/Task_Diagram.jpg)
+
+
+
+    ![alt text](img/Task_Diagram.jpg)
