@@ -35,15 +35,17 @@ There is no restriction on the type of balls you have to put in the holes, every
 * At your second right mouse click, the power will be locked and your shoot will start.
 * To quit the game before it ends press **ESC**.
 * To enable the amateur mode, which will display the trajectory of the white ball while aiming press **A**.
-- When the game has finished if you want to restart and play another game press **ENTER**.
+* When the game has finished if you want to restart and play another game press **ENTER**.
 ## Tasks
 * BALL:
-    Each ball is a periodic task, which can update its position and speed and look for the position and speed of the other balls in order to make the calculation the most accurate possible.
-    It also handles all type of collisions.
-    It handles when the ball enters in a hole.
+    - Each ball is a periodic task, which can update its position and speed and look for the position and speed of the other balls in order to make the calculation the most accurate possible.
+    - It handles all type of collisions.
+    - It handles when the ball enters in a hole.
 * USER:
-    It updates the cue's position when it is the aiming phase, following your mouse cursor.
-    It updates the power of the shot according to the cue's position when the second click occurs.
+    - It updates the cue's position when it is the aiming phase, following your mouse cursor.
+    - It updates the power of the shot according to the cue's position when the second click occurs.
+    - It handles the turns between players.
 * RENDER:
-    It refreshes the screen at any given frame, looking at the user state and at all the balls positions.
-    To minimize the flickering effect, we create a buffer where we upload the whole constructed bitmap and then uplouad it to the screen buffer all at once.
+    - It refreshes the screen at any given frame, looking at the user state and at all the balls positions.
+    *Note: To minimize the flickering effect, we create a buffer where we upload the whole constructed bitmap and then upload it to the screen buffer all at once.*
+    - It displays the white ball's trajectory depending if amateur mode is on or off.
