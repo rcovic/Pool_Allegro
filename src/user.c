@@ -79,3 +79,70 @@ void    release_cue() {
 	else
 		user.state = WAKE_BALL;
 }
+//-----------------------------------------------------------------------------
+// WAKE_WHITE FUNCTION - sets white ball angle and speed and tells user task
+// to wait to the next shot 
+//-----------------------------------------------------------------------------
+void    wake_white() {
+	ball[0].angle = user.aim_angle;
+	ball[0].speed = user.shot_power;
+	ball[0].still = false;
+	user.state = WAIT;                         //change user state
+}
+//-----------------------------------------------------------------------------
+// WAIT_USER FUNCTION - if all remainig balls are still, it prepares user for
+// the next shot (based on if a user has scored a point)
+//-----------------------------------------------------------------------------
+void    wait_user() {
+    int still_balls_counter = 0;               //balls in movement
+    int left_balls_counter = 0;                //remaining balls
+    int i;                                     //balls counter
+
+	for (i=0; i<N_BALLS; i++){
+		if (ball[i].still)
+			still_balls_counter++;
+        if (ball[i].alive)
+            left_balls_counter++;
+	}
+
+	if (still_balls_counter == N_BALLS) {      //next player
+        if (left_balls_counter == left_balls)
+            user.player = (user.player % 2) + 1;
+        left_balls = left_balls_counter;
+		init_user();
+	}
+}
+//-----------------------------------------------------------------------------
+// USER_TASK FUNCTION- implementation of user task who periodically performs
+// action based on user status and user input
+//-----------------------------------------------------------------------------
+void    user_task(void) {
+
+    //Code executed periodically
+    while(1) {
+        switch  (user.state){                   //check on user state
+            case AIM:                           //aiming phase                          
+				get_mouse_position();
+				user.aim_angle = calculate_aim_angle();
+				calculate_cue_angle();
+				check_mouse_click();
+				break;
+            case LOAD:                          //loading phase
+			    load_release_cue();
+				check_mouse_click();
+				break;
+			case RELEASE:                       //release phase
+			    release_cue();
+				break;
+			case WAKE_BALL:                     //wake white phase
+			    wake_white();
+				break;
+			case WAIT:                          //wait phase
+			    wait_user();
+			    break;
+			default:
+				break;
+		}
+        ptask_wait_for_period();                //synchronize task with period
+    }
+}
