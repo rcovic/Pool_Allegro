@@ -54,7 +54,7 @@ void init_bitmaps(void){
 // INIT_POOL_TABLE FUNCTION: calculate and stores all hole positins
 //-----------------------------------------------------------------------------
 void    init_pool_table(void)   {
-    int i;                          //hole index
+    int i;                          	//hole index
 
 	for (i=0; i<N_HOLES; ++i) {
 		hole[i].x = (HOLE_X + HOLE_DISTANCE * (i % 3));
@@ -66,6 +66,8 @@ void    init_pool_table(void)   {
 // is out of the game
 //-----------------------------------------------------------------------------
 void    set_ball_parameters(int x, int y, ball_struct* b) {
+	int		i;							//ball index
+
     b->p.x = x;
 	b->p.y = y;
 	b->c.x = x +15;
@@ -75,6 +77,9 @@ void    set_ball_parameters(int x, int y, ball_struct* b) {
 	b->speed = 0;
 	b->alive = true;
 	b->still = true;
+
+	for (i=0; i<N_BALLS; i++)
+		b->pd[i] = 1000;
 }
 //-----------------------------------------------------------------------------
 // INIT_BALLS FUNCTION: calculate all ball positions and sets theirs parameters
@@ -86,10 +91,10 @@ void    init_balls() {
 	point   tmp;
 	tmp.x = BALL1_X;
 	tmp.y = BALL1_Y;
-    int     i;                      //ball index
+    int     i;                      	//ball index
 	set_ball_parameters(WHITE_X, WHITE_Y, &ball[0]);
     
-    for (i=1; i<N_BALLS; ++i) {
+    for (i=1; i<N_BALLS; i++) {
         if (count >= threshold) {
 	        threshold++;
 			count = 0;
@@ -97,7 +102,7 @@ void    init_balls() {
 			tmp.y += BALLSIZE/2;
 		}
 		if (i == 1)
-		    set_ball_parameters(BALL1_X,BALL1_Y,&ball[1]);
+		    set_ball_parameters(BALL1_X, BALL1_Y, &ball[1]);
 		else
 			set_ball_parameters(tmp.x, tmp.y - count * BALLSIZE, &ball[i]);
 		count++;
