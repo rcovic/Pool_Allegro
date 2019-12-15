@@ -4,24 +4,29 @@
 #include "init.h"
 
 //-----------------------------------------------------------------------------
-// BITMAP OBJECTS DEFINITION (already commented in INIT.H)
+// BITMAP OBJECTS DEFINITION
 //-----------------------------------------------------------------------------
-BITMAP*  parquet_bmp;
-BITMAP*  pool_table_bmp;
-BITMAP*  ball_panel_bmp;
-BITMAP*  ball_bmp[N_BALLS];  //16 bitmaps for 16 balls
-BITMAP*  cue_bmp;            //bitmap for user cue
-BITMAP*  buffer_bmp;         //buffer bitmap
+BITMAP*     parquet_bmp;        	//bitmap for the background
+BITMAP*     pool_table_bmp;     	//bitmap for the pool table
+BITMAP*     ball_panel_bmp;     	//bitmap for top and bot ball panel
+BITMAP*     ball_bmp[N_BALLS];  	//16 bitmaps for 16 balls
+BITMAP*     cue_bmp;            	//bitmap for user cue
+BITMAP*     buffer_bmp;         	//buffer bitmap
 //-----------------------------------------------------------------------------
 // GLOBAL VARIABLES DEFINITION
 //-----------------------------------------------------------------------------
-point       hole[N_HOLES];       //contains coordinates of holes
-ball_struct ball[N_BALLS];       //contains parameters of balls
-user_struct user;                //contain user states and cue params
+point       hole[N_HOLES];       	//contains coordinates of holes
+ball_struct ball[N_BALLS];       	//contains parameters of balls
+user_struct user;                	//contain user states and cue params
+//-----------------------------------------------------------------------------
+// SEMAPHORE DEFINITION
+//-----------------------------------------------------------------------------
+sem_t       mutex;              	//for mutual exclusion
+sem_t       ball_sem[N_BALLS];  	//for synchronize ball tasks
 //-----------------------------------------------------------------------------
 // INIT_ENVIRONMENT FUNCTION: initialize allegro environment and ptask library
 //-----------------------------------------------------------------------------
-void init_environment(void){
+void    init_environment(void)  {
     allegro_init();
     set_color_depth(desktop_color_depth());
     set_gfx_mode(GFX_AUTODETECT_WINDOWED, RES_X, RES_Y, 0, 0);
@@ -31,22 +36,32 @@ void init_environment(void){
     ptask_init(SCHED_OTHER, GLOBAL, NO_PROTOCOL);
 }
 //-----------------------------------------------------------------------------
+// INIT_SEMAPHORES FUNCTION: initialize mutex and private semaphores
+//-----------------------------------------------------------------------------
+void	init_semaphores(void){
+	int i;								//ball index
+	sem_init(&mutex, 0, 1);				//set mutex semaphore
+
+	for (i=0; i<N_BALLS; i++)
+		sem_init(&ball_sem[i], 0, 0);	//set private semaphores
+}
+//-----------------------------------------------------------------------------
 // INIT_BITMAPS FUNCTION: load bitmaps from img folder to bitmap objects
 //-----------------------------------------------------------------------------
-void init_bitmaps(void){
-    char    ballFilename[255];      //stores i-ball filename
-    int     i;                      //ball index
-    
+void    init_bitmaps(void)  {
+    char    ballFilename[255];      	//stores i-ball filename
+    int     i;                      	//ball index
+
     parquet_bmp = load_bitmap("img/parquet.bmp", NULL);
     pool_table_bmp = load_bitmap("img/poolTable.bmp", NULL);
-    ball_panel_bmp = load_bitmap("img/statsPanel.bmp", NULL);
-    
-     for (i=0; i<N_BALLS; ++i) {
+    ball_panel_bmp = load_bitmap("img/statsPanel.bmp",NULL);
+    cue_bmp = load_bitmap("img/cue1.bmp", NULL);
+
+    for (i=0; i<N_BALLS; i++) {
         sprintf(ballFilename, "img/ball%d.bmp", i);
         ball_bmp[i] = load_bitmap(ballFilename, NULL);
     }
 
-    
     buffer_bmp = create_bitmap(RES_X, RES_Y);
 }
 
