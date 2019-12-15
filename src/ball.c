@@ -59,3 +59,49 @@ int     check_ball_collision(int i) {
     }
     return collision_counter;
 }
+//-----------------------------------------------------------------------------
+// SYNC_BALL_TASK FUNCTION - wait here for all ball tasks
+//-----------------------------------------------------------------------------
+void    sync_ball_task(int i) {
+    int j;                                      //ball index
+    //tasks synchronization through mutex and private semaphores
+    sem_wait(&mutex);
+    for (j=0; j<N_BALLS; j++) {
+        if (j != i)
+            sem_post(&ball_sem[j]);
+    }
+    sem_post(&mutex);
+
+    for (j=0; j<N_BALLS-1; j++)
+        sem_wait(&ball_sem[i]);
+}
+//-----------------------------------------------------------------------------
+// CHECK_BORDER_COLLISION FUNCTION - check if ball is colliding with a border
+// and if yes, changes its movement angle
+//-----------------------------------------------------------------------------
+void    check_border_collision(int i) {
+    if (ball[i].d.y <= (double) TOP_Y || ball[i].d.y + 30 >= (double) BOT_Y)
+        ball[i].angle = 360 - ball[i].angle;
+    else if (ball[i].d.x <= (double) LEFT_X || ball[i].d.x +30 >= (double) RIGHT_X)
+        ball[i].angle = 180 - ball[i].angle;
+ 
+    adjust_angle(&ball[i].angle);               //set angle between 0 and 360
+}
+//-----------------------------------------------------------------------------
+// MOVE_BALL FUNCTION - update ball coordinates based on angle and speed
+//-----------------------------------------------------------------------------
+void    move_ball(int i) {
+    ball[i].d.x += cos((ball[i].angle) * PI / 180) * ball[i].speed ;
+    ball[i].d.y += sin((ball[i].angle) * PI / 180) * ball[i].speed ;
+    ball[i].p.x = ball[i].d.x;
+    ball[i].p.y = ball[i].d.y;
+    ball[i].c.x = (ball[i].p.x) + 15;
+    ball[i].c.y = (ball[i].p.y) + 15;
+}
+//-----------------------------------------------------------------------------
+// CHECK_FOR_DEADLINES FUNCTION - print on stdout if a task has a deadline
+//-----------------------------------------------------------------------------
+void    check_for_deadlines(int i) {
+    if (ptask_deadline_miss())
+        printf("Deadline for task: %i\n",i);
+}
