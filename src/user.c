@@ -29,7 +29,7 @@ double  calculate_aim_angle() {
     point   p3;                                 //stores mouse projection
     double  distance;                           //dist between mouse and cue
 
-    distance = get_distance(&p3, xMouse, yMouse, ball[0].c.x, ball[0].c.y);
+    distance = get_dist(&p3, xMouse, yMouse, ball[0].c.x, ball[0].c.y);
     return get_angle(p3, distance);             //return calculated angle
 }
 //-----------------------------------------------------------------------------
@@ -47,31 +47,35 @@ void    calculate_cue_angle() {
 // CHECK_MOUSE_CLICK FUNCTION - check if user left click on mouse (toggle mode)
 //-----------------------------------------------------------------------------
 void    check_mouse_click() {
-	if(mouse_b & 1)
+	if (mouse_b & 1)
         curr_mouse_state = 1;
-    if(curr_mouse_state && ! prev_mouse_state)
+    if (curr_mouse_state && ! prev_mouse_state)
         user.state += 1;
     prev_mouse_state = curr_mouse_state;
     curr_mouse_state = 0;
 }
 //-----------------------------------------------------------------------------
-// USER_TASK FUNCTION- implementation of user task who periodically performs
-// action based on user status and user input
+// LOAD_RELEASE_CUE FUNCTION - moves cue back and forth white ball, calculating
+// the show power inversely proportional to the distance 
 //-----------------------------------------------------------------------------
-void user_task(void) {
-
-    //Code executed periodically
-    while(1) {
-        switch  (user.state){                   //check on user state
-            case AIM:                           //aiming phase                          
-				get_mouse_position();
-				user.aim_angle = calculate_aim_angle();
-				calculate_cue_angle();
-				check_mouse_click();
-				break;
-			default:
-				break;
-		}
-        ptask_wait_for_period();                //synchronize task with period
-    }
+void    load_release_cue() {
+	if (!load_flag)                            //moves back
+		user.wd -= SPEED / 4;
+	else                                       //moves forth
+		user.wd += SPEED / 4;
+    //boundaries to invert movement
+	if (user.wd < -160 || user.wd > -20)
+		load_flag = !load_flag;
+    //calculate shot power
+	user.shot_power = ((double) abs(user.wd) / 160.0f) * SPEED;
+}
+//-----------------------------------------------------------------------------
+// RELEASE_CUE FUNCTION - moves cue towards white ball, telling user task
+// to move it once the cue reaches the ball 
+//-----------------------------------------------------------------------------
+void    release_cue() {
+	if (user.wd < -15)
+		user.wd += SPEED * 2;
+	else
+		user.state = WAKE_BALL;
 }
