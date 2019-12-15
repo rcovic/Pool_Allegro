@@ -12,14 +12,14 @@ int main(void){
 	init_game();
 
 	//create render task							
-	ptask_create_edf(render_task,P,RT,DL,NOW);
+	ptask_create_edf(render_task, P, RT_R, DL_R, NOW);
 	
 	//create 16 ball tasks
-	for(i=0; i<1; ++i)
-		ptask_create_edf(ball_task,P,RT,DL,NOW);
+	for (i=0; i<N_BALLS; ++i)
+		ptask_create_edf(ball_task, P, RT_B, DL_B, NOW);
 
 	//create user task
-	ptask_create_edf(user_task,P,RT,DL,NOW);
+	ptask_create_edf(user_task, P, RT_U, DL_U, NOW);
 
 	//wait for user input to end
 	while (!key[KEY_ESC]){};
