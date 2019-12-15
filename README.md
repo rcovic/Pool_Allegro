@@ -49,3 +49,5 @@ There is no restriction on the type of balls you have to put in the holes, every
     - It refreshes the screen at any given frame, looking at the user state and at all the balls positions.
     *Note: To minimize the flickering effect, we create a buffer where we upload the whole constructed bitmap and then upload it to the screen buffer all at once.*
     - It displays the white ball's trajectory depending if amateur mode is on or off.
+
+![alt text](img/Task_Diagram.jpg)
