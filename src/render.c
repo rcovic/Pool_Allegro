@@ -27,14 +27,13 @@ void    draw_on_buffer() {
 // RENDER_TASK FUNCTION- implementation of render task who periodically draws 
 // on screen all the bitmaps at the specified positions
 //-----------------------------------------------------------------------------
-void render_task(void){
+void    render_task(void) {
     //Code executed periodically
-    while(1){
+    while (1) {
         draw_on_buffer();
-        scare_mouse();                      //avoid mouse interfere with render
-        draw_sprite(screen,buffer_bmp,0,0); //bitmaps are rendered on screen
+        scare_mouse();                              //avoid mouse interfere 
+        draw_sprite(screen,buffer_bmp,0,0);         //render all on screen
         unscare_mouse();
-        ptask_wait_for_period();            //synchronize task with period
+        ptask_wait_for_period();                    //synchronize task
     }
 }
-
