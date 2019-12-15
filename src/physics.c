@@ -8,12 +8,12 @@
 // GET_DISTANCE FUNCTION: get distance between 2 points saving x,y 
 // coordinates of projection of a point
 //-----------------------------------------------------------------------------
-double  get_distance(point* p3, int x1, int y1, int x2, int y2) {
+double  get_dist(point* p3, int x1, int y1, int x2, int y2) {
     double    distance;                             //stores return value
 
     p3->x = x1 - x2;                                //get x projection
     p3->y = y1 - y2;                                //get y projection
-    distance = sqrt(pow(p3->x, 2) + pow(p3->y, 2));    //calculate distance
+    distance = sqrt(pow(p3->x, 2) + pow(p3->y, 2)); //calculate distance
     return distance;
 }
 //-----------------------------------------------------------------------------
@@ -24,7 +24,7 @@ double  get_angle(point p3, double distance) {
 
     angle = acos(p3.x / distance) * 180 / PI;       //calculate angle
 
-    if(p3.y < 0)                                    //adjust angle
+    if (p3.y < 0)                                   //adjust angle
         angle = (360 - abs(angle)) % 360;
     return  angle;
 }
@@ -37,7 +37,7 @@ double  get_vector_angle(vector v, double module) {
     //calculate angle using a 0.001 padding to avoid division on 0
     angle = acos(((v.x) + 0.001) / (module + 0.001)) * 180 / PI;
 
-    if(v.y < 0)                                     //adjust angle
+    if (v.y < 0)                                    //adjust angle
         angle = (360 - abs(angle)) % 360;
     return  angle;
 }
