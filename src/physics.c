@@ -168,3 +168,51 @@ void line_border_coll(point* b, int x, int y, double d, double m){
             set_top(b,x, y,m);
     }
 }
+//-----------------------------------------------------------------------------
+// LINE_BALL_INTERSECTS: check for the first ball line would collide with, then
+// calculate end x,y point as the point where draw line intersects ball centre
+// in a range equal to ball radius
+//-----------------------------------------------------------------------------
+int line_ball_intersects(point* b, int x, int y, double m){
+    int i = 1;										//ball index
+    double dist, dist2;								//stores distances
+	//angle formed with white ball and border and white ball and other ball,
+	//used to determine if lines are in the same direction
+    double d,e;										
+    point tmp;										//stores tmp projections
+    double max = 1000;								//max distance
+    int collides_with=0;							//index of ball collided
+
+    if(m > 10000 )									//tone down m for calc.
+        m = 10000;   
+    if(m < -10000)
+        m = -10000;  
+    double q = y - m*x;								//q term of line
+    for(i = 1; i < N_BALLS; i++){
+        int xP = ball[i].c.x;
+        int yP = ball[i].c.y;
+		dist = (abs(yP - (m * xP + q))) / (sqrt(1 + pow(m, 2)));
+		//if (centre ball point)_line distance is less than radius, intersects
+		if(dist <= 15){           
+            dist2 = get_dist(&tmp, b->x,b->y, x, y);
+            d = get_angle(tmp, dist2);
+            dist2 = get_dist(&tmp, xP,yP, x, y);
+            e = get_angle(tmp, dist2);
+			dist2 = sqrt(pow(x-xP,2)+pow(y-yP,2)); 
+			//check the closest ball which intersects line        
+			if(dist2 < max && (abs(d-e)<=90 || abs(d-e) >=270) ){   
+				collides_with = i;
+				max = dist2;
+				if((d < e  && !((d <=90) && (e >=270))) || ((d >= 270) && (e <= 90)) )
+					e = d - 90;
+				else if(d > e || ((d <=90) && (e >=270)))
+					e = d + 90;
+				adjust_angle(&e);					//set angle from 0 to 360
+				//update end x,y point
+				b->x = xP + dist*cos((e)*PI/180);
+				b->y = yP + dist*sin((e)*PI/180);
+			}
+		}
+	}
+	return collides_with;							
+}
