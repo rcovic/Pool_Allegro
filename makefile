@@ -5,7 +5,7 @@ MAIN = main
 #---------------------------------------------------------
 # Source files to be compiled when necessary
 #---------------------------------------------------------
-SRC = init render ball user
+SRC = init physics render ball user
 #---------------------------------------------------------
 # CC is the compiler to be used
 #---------------------------------------------------------
