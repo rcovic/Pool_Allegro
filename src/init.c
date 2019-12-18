@@ -77,7 +77,6 @@ void    init_bitmaps_fonts(void)  {
 	win_font = load_font("ArialBlack.pcx",NULL, NULL);
     restart_font = load_font("Arial.pcx",NULL, NULL);
 }
-
 //-----------------------------------------------------------------------------
 // INIT_POOL_TABLE FUNCTION: calculate and stores all hole positins
 //-----------------------------------------------------------------------------
@@ -91,7 +90,7 @@ void    init_pool_table(void)   {
 }
 //-----------------------------------------------------------------------------
 // SET_BALL_PARAMETERS FUNCTION: called when game starts or when a ball
-// is out of the game
+// is out of the game to reset it on a new position as still
 //-----------------------------------------------------------------------------
 void    set_ball_parameters(int x, int y, ball_struct* b) {
 	int		i;							//ball index
@@ -107,7 +106,7 @@ void    set_ball_parameters(int x, int y, ball_struct* b) {
 	b->still = true;
 
 	for (i=0; i<N_BALLS; i++)
-		b->pd[i] = 1000;
+		b->pd[i] = 1000;				//max previous distance
 }
 //-----------------------------------------------------------------------------
 // INIT_BALLS FUNCTION: calculate all ball positions and sets theirs parameters
