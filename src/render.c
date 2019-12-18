@@ -87,35 +87,55 @@ void	draw_ending_screen() {
 	textout_ex(buffer_bmp, restart_font, restart_msg, 20, 300, white, -1);
 }
 //-----------------------------------------------------------------------------
-// DRAW_ON_BUFFER FUNCTION: draws all the bitmaps first on a buffer bitmap
-// which is then drawn on screen
+// DRAW_GAME FUNCTION: draws all the bitmaps and fonts first on a buffer 
+// bitmap which is then drawn to screen, to avoid screen flickering
 //-----------------------------------------------------------------------------
-void    draw_on_buffer() {
+void    draw_game() {
     int i = 0;                                      //ball index
-
+	
+	//draws background, stats panel and pool table
     draw_sprite(buffer_bmp, parquet_bmp, 0, 0);
     draw_sprite(buffer_bmp, pool_table_bmp, TABLE_X, TABLE_Y);
     draw_sprite(buffer_bmp, ball_panel_bmp, PANEL1_X, PANEL1_Y);
-    //draw the bottom ball panel rotating the bitmap at 180 degrees
+    //draws the bottom ball panel rotating the bitmap at 180 degrees
     rotate_sprite(buffer_bmp, ball_panel_bmp, PANEL2_X, PANEL2_Y, itofix(128));
-     
-    for (i=0; i<N_BALLS; ++i)                       //draw the 16 balls
+	//draws player stats, converting numeric scores to ASCII format
+    textout_ex(buffer_bmp, stats_font, "Player 1:", 20, 20, white, -1);
+    textout_ex(buffer_bmp, stats_font, "Player 2:", 20, 760, white, -1);
+    makeString(user.p1_score,0);
+    makeString(user.p2_score,1);
+    textout_ex(buffer_bmp, stats_font,ascii_score[0],140,20,white,-1);
+    textout_ex(buffer_bmp, stats_font,ascii_score[1],140,760, white, -1);
+	//draw a red circle indicating which player has to shot
+    if (user.player == 1)
+        circlefill(buffer_bmp, 220, 32, 10, green);
+    else
+        circlefill(buffer_bmp, 220, 774, 10,green);
+	//calculate and draw line if player is in aiming phase and set aim mode
+    if (user.state == AIM && user.aim_key)
+        draw_line();
+    //draw the 16 balls based on their coordinates
+    for (i=0; i<N_BALLS; i++)                       
         draw_sprite(buffer_bmp, ball_bmp[i], ball[i].p.x, ball[i].p.y);
-
-    if (user.state < WAKE_BALL)                     //draw cue if user has to shot
-          pivot_sprite(buffer_bmp, cue_bmp, user.p.x, user.p.y, 0, user.wd, itofix(user.cue_angle));
-
+	//draw cue if user has to shot rotating it based on its angle
+    if (user.state < WAKE_BALL)                     
+		pivot_sprite(buffer_bmp, cue_bmp, user.p.x, user.p.y, 0, user.wd, itofix(user.cue_angle));  
 }
 //-----------------------------------------------------------------------------
 // RENDER_TASK FUNCTION- implementation of render task who periodically draws 
 // on screen all the bitmaps at the specified positions
 //-----------------------------------------------------------------------------
 void    render_task(void) {
+	white = makecol(255, 255, 255);					//set white color
+	green = makecol(0,255,0);						//set green color
     //Code executed periodically
     while (1) {
-        draw_on_buffer();
-        scare_mouse();                              //avoid mouse interfere 
-        draw_sprite(screen,buffer_bmp,0,0);         //render all on screen
+        if(user.state == END)
+            draw_ending_screen();
+        else
+            draw_game();
+        scare_mouse();                              //avoid mouse interf. 
+        draw_sprite(screen,buffer_bmp,0,0);         //draws all on screen
         unscare_mouse();
         ptask_wait_for_period();                    //synchronize task
     }
