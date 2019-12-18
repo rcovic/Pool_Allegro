@@ -54,3 +54,10 @@ There is no restriction on the type of balls you have to put in the holes, every
 
 
     ![alt text](img/Task_Diagram.jpg)
+    
+ 
+## Screenshot of an ongoing match
+
+
+ ![alt text](img/pool.jpg)
+
