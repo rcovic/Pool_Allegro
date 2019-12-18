@@ -7,20 +7,20 @@
 //-----------------------------------------------------------------------------
 // LOCAL VARIABLES DEFINITION
 //-----------------------------------------------------------------------------
-int mousePos, xMouse, yMouse;                   //used to calc mouse position
+int mousePos;                   //used to calc mouse position
 uint8_t prev_mouse_state;                       //used to check mouse click
 uint8_t curr_mouse_state;                       //used to check mouse click
-
+uint8_t prev_key_state;							//used to check key press
+uint8_t curr_key_state;							//used to check key press
 bool load_flag;                                 //true if cue is loading
-
-int left_balls = N_BALLS;                       //used to check remaining balls
+int left_balls = N_BALLS - 1;					//used to check remaining balls
 //-----------------------------------------------------------------------------
 // GET_MOUSE_POSITION FUNCTION - calculate x and y mouse coordinates
 //-----------------------------------------------------------------------------
 void    get_mouse_position() {
     mousePos = mouse_pos;
-	xMouse = mousePos >> 16;
-	yMouse = mousePos & 0x0000ffff;
+	user.m.x = mousePos >> 16;
+	user.m.y = mousePos & 0x0000ffff;
 }
 //-----------------------------------------------------------------------------
 // CALCULATE_AIM_ANGLE FUNCTION - calculate aim angle based on mouse position
@@ -29,7 +29,7 @@ double  calculate_aim_angle() {
     point   p3;                                 //stores mouse projection
     double  distance;                           //dist between mouse and cue
 
-    distance = get_dist(&p3, xMouse, yMouse, ball[0].c.x, ball[0].c.y);
+    distance = get_dist(&p3, user.m.x, user.m.y, ball[0].c.x, ball[0].c.y);
     return get_angle(p3, distance);             //return calculated angle
 }
 //-----------------------------------------------------------------------------
@@ -55,13 +55,24 @@ void    check_mouse_click() {
     curr_mouse_state = 0;
 }
 //-----------------------------------------------------------------------------
+// CHECK_KEYBOARD FUNCTION - check if user press the A key to enable aim mode
+//-----------------------------------------------------------------------------
+void	check_keyboard(void) {
+	if (key[KEY_A])
+        curr_key_state = 1;
+    if (curr_key_state && !prev_key_state)
+        user.aim_key = !user.aim_key;
+    prev_key_state = curr_key_state;
+    curr_key_state = 0;
+}
+//-----------------------------------------------------------------------------
 // LOAD_RELEASE_CUE FUNCTION - moves cue back and forth white ball, calculating
-// the show power inversely proportional to the distance 
+// the shot power inversely proportional to the distance 
 //-----------------------------------------------------------------------------
 void    load_release_cue() {
-	if (!load_flag)                            //moves back
+	if (!load_flag)								//moves back
 		user.wd -= SPEED / 4;
-	else                                       //moves forth
+	else										//moves forth
 		user.wd += SPEED / 4;
     //boundaries to invert movement
 	if (user.wd < -160 || user.wd > -20)
