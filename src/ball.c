@@ -126,3 +126,50 @@ void    c_hole(int sx, int dx, int up, int down, int i) {
         }
     }
 }
+//-----------------------------------------------------------------------------
+// CHECK_HOLE_COLLISION FUNCTION - check collision with each hole
+//-----------------------------------------------------------------------------
+void    check_hole_collision(int i) {
+    c_hole(hole[0].x + 15, hole[0].x + 30, hole[0].y + 15, hole[0].y + 30, i);
+    c_hole(hole[1].x - 20, hole[1].x + 20, hole[1].y, hole[1].y + 15, i);
+    c_hole(hole[2].x - 30, hole[2].x - 15, hole[2].y + 15, hole[2].y + 30, i);
+    c_hole(hole[3].x + 15, hole[3].x + 30, hole[3].y - 30, hole[3].y - 15, i);
+    c_hole(hole[4].x - 20, hole[4].x + 20, hole[4].y - 15, hole[4].y, i);
+    c_hole(hole[5].x - 30, hole[5].x - 15, hole[5].y - 30, hole[5].y - 15, i);
+}
+
+//-----------------------------------------------------------------------------
+// CHECK_BORDER_COLLISION FUNCTION - check if ball is colliding with a border
+// and if yes, changes its movement angle, and slightly increment speed
+// to avoid compenetration bug and reput ball inside the table
+//-----------------------------------------------------------------------------
+void    check_border_collision(int i) {
+    if (ball[i].c.y <=  TOP_Y + 15 || ball[i].c.y >= BOT_Y - 15){
+        ball[i].angle = 360 - ball[i].angle;
+        ball[i].speed += 2 * ball[i].friction;  //resolve compenetration bug
+    }
+    else if (ball[i].c.x <= LEFT_X + 15|| ball[i].c.x >= RIGHT_X - 15){
+        ball[i].angle = 180 - ball[i].angle;
+        ball[i].speed += 2 * ball[i].friction;  //resolve compenetration bug
+    }
+ 
+    adjust_angle(&ball[i].angle);               //set angle between 0 and 360
+}
+//-----------------------------------------------------------------------------
+// MOVE_BALL FUNCTION - update ball coordinates based on angle and speed
+//-----------------------------------------------------------------------------
+void    move_ball(int i) {
+    ball[i].d.x += cos((ball[i].angle) * PI / 180) * ball[i].speed ;
+    ball[i].d.y += sin((ball[i].angle) * PI / 180) * ball[i].speed ;
+    ball[i].p.x = ball[i].d.x;
+    ball[i].p.y = ball[i].d.y;
+    ball[i].c.x = (ball[i].p.x) + 15;
+    ball[i].c.y = (ball[i].p.y) + 15;
+}
+//-----------------------------------------------------------------------------
+// CHECK_FOR_DEADLINES FUNCTION - print on stdout if a task has a deadline
+//-----------------------------------------------------------------------------
+void    check_for_deadlines(int i) {
+	if (ptask_deadline_miss())
+        printf("Deadline for task: %i\n",i);
+}
