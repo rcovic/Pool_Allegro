@@ -144,6 +144,7 @@ void    init_user() {
 	user.cue_angle = 0;
 	user.wd = -30;
 	user.shot_power = 0;
+	user.aim_key = false;
 }
 //-----------------------------------------------------------------------------
 // INIT_USER_SCORES FUNCTION: set both user scores to 0
@@ -153,11 +154,17 @@ void    init_user_scores() {
 	user.p2_score = 0;
 }
 //-----------------------------------------------------------------------------
-// INIT_GAME FUNCTION: calls all the INIT_FUNCTIONS when game starts
+// INIT_GAME FUNCTION: calls all the INIT_FUNCTIONS. When game starts it is
+// called with a false restart flag in order to init environment, fonts and
+// bitmaps for the first time. If a game restart, the function is called with
+// a false flag to not set again enc ecc.. and avoid errors
 //-----------------------------------------------------------------------------
-void    init_game(void) {
-    init_environment();
-    init_bitmaps();
+void    init_game(bool restart) {
+	if (!restart){
+    	init_environment();
+		init_bitmaps_fonts();
+	}
+	init_semaphores();
     init_pool_table();
     init_balls();
     init_user();
