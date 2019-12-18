@@ -101,6 +101,23 @@ void    wake_white() {
 	user.state = WAIT;                         //change user state
 }
 //-----------------------------------------------------------------------------
+// CHECK_Y FUNCTION - called when white ball finished in a hole and sets
+// appropriately along y axis in order to avoid compenetration with other ball
+// finished in white ball start position. Function called recursively if need
+//-----------------------------------------------------------------------------
+int		check_y(int y) {
+	int	i;										//ball index
+	int	newY = y;								//start white y coordinate									
+
+	for (i=0; i<N_BALLS; i++) {
+		if (ball[i].c.x > 390 && ball[i].c.x < 430)
+			if (ball[i].c.y > (y - 15) && ball[i].c.y < (y + 15))
+				//recursive call to use another position if current is busy
+        		newY=check_y(y + 15);
+  }
+	return newY;
+}
+//-----------------------------------------------------------------------------
 // WAIT_USER FUNCTION - if all remainig balls are still, it prepares user for
 // the next shot (based on if a user has scored a point)
 //-----------------------------------------------------------------------------
@@ -109,26 +126,42 @@ void    wait_user() {
     int left_balls_counter = 0;                //remaining balls
     int i;                                     //balls counter
 
+	//count how many ball are not in movement and how many are still on table	
 	for (i=0; i<N_BALLS; i++){
 		if (ball[i].still)
 			still_balls_counter++;
-        if (ball[i].alive)
+        if (ball[i].alive && i != 0)
             left_balls_counter++;
 	}
-
-	if (still_balls_counter == N_BALLS) {      //next player
-        if (left_balls_counter == left_balls)
+	//end game if no balls are left (except the white one)
+	if (left_balls_counter == 0)
+		user.state = END;
+	//next player if all balls are still
+	else if (still_balls_counter == N_BALLS) {
+		//change player if no ball in hole or if white ball is in hole
+        if (left_balls_counter == left_balls || ball[0].alive == false)
             user.player = (user.player % 2) + 1;
+		//before next turn set appropriately white ball if it is in hole
+		if (ball[0].alive == false)
+			set_ball_parameters(WHITE_X, check_y(387), &ball[0]);
         left_balls = left_balls_counter;
-		init_user();
+		init_user();							//reset user state
 	}
+}
+//-----------------------------------------------------------------------------
+// CHECK_ENTER FUNCTION - called when user state is in END and check for
+// ENTER key press, if so, restart the game
+//-----------------------------------------------------------------------------
+void	check_enter() {
+	if (key[KEY_ENTER])
+		init_game(true);
 }
 //-----------------------------------------------------------------------------
 // USER_TASK FUNCTION- implementation of user task who periodically performs
 // action based on user status and user input
 //-----------------------------------------------------------------------------
 void    user_task(void) {
-
+	user.player = 1;							//player 1 starts
     //Code executed periodically
     while(1) {
         switch  (user.state){                   //check on user state
@@ -137,6 +170,7 @@ void    user_task(void) {
 				user.aim_angle = calculate_aim_angle();
 				calculate_cue_angle();
 				check_mouse_click();
+				check_keyboard();
 				break;
             case LOAD:                          //loading phase
 			    load_release_cue();
@@ -151,6 +185,8 @@ void    user_task(void) {
 			case WAIT:                          //wait phase
 			    wait_user();
 			    break;
+			case END:							//end phase
+				check_enter();
 			default:
 				break;
 		}
