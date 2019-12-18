@@ -31,7 +31,7 @@ extern  double  get_bounce_angle(double a1, double a2);
 //convert degree value to slope relative to x axis
 extern  double  degree_to_m(double angle);
 //check if line collides with any of table's border
-extern  void    line_border_collision(point* b, int x, int y, double d, double m);
+extern  void    line_border_coll(point* b, int x, int y, double d, double m);
 //check if line collides with a ball
 extern  int     line_ball_intersects(point* b, int x, int y, double m);
 #endif
