@@ -62,48 +62,67 @@ int     check_ball_collision(int i) {
     return collision_counter;
 }
 //-----------------------------------------------------------------------------
-// SYNC_BALL_TASK FUNCTION - wait here for all ball tasks
+// SYNC_BALL_TASK FUNCTION - all ball task are synchronized at this point,
+// so they can modify their speed and angle after each ball has read them
+// for checking collisions
 //-----------------------------------------------------------------------------
 void    sync_ball_task(int i) {
-    int j;                                      //ball index
+    int     j;                                  //ball index
     //tasks synchronization through mutex and private semaphores
-    sem_wait(&mutex);
+    sem_wait(&mutex);                           //start critical section
     for (j=0; j<N_BALLS; j++) {
         if (j != i)
             sem_post(&ball_sem[j]);
     }
-    sem_post(&mutex);
+    sem_post(&mutex);                           //end critical section
 
     for (j=0; j<N_BALLS-1; j++)
         sem_wait(&ball_sem[i]);
 }
 //-----------------------------------------------------------------------------
-// CHECK_BORDER_COLLISION FUNCTION - check if ball is colliding with a border
-// and if yes, changes its movement angle
+// UPDATE_BALL_PARAMETERS FUNCTION - calculate ball speed and angle adding up
+// all vectors and determing result vector, where its module corresponds to
+// ball speed and its direction corresponds to ball angle
 //-----------------------------------------------------------------------------
-void    check_border_collision(int i) {
-    if (ball[i].d.y <= (double) TOP_Y || ball[i].d.y + 30 >= (double) BOT_Y)
-        ball[i].angle = 360 - ball[i].angle;
-    else if (ball[i].d.x <= (double) LEFT_X || ball[i].d.x +30 >= (double) RIGHT_X)
-        ball[i].angle = 180 - ball[i].angle;
- 
-    adjust_angle(&ball[i].angle);               //set angle between 0 and 360
+void    update_ball_parameters(int i) {
+    ball[i].gd.x += (ball[i].ld.x * ball[i].sl);
+    ball[i].gd.y += (ball[i].ld.y * ball[i].sl);
+    ball[i].speed = sqrt(pow(ball[i].gd.x, 2) + pow(ball[i].gd.y, 2));
+    ball[i].angle = get_vector_angle(ball[i].gd,ball[i].speed);
 }
 //-----------------------------------------------------------------------------
-// MOVE_BALL FUNCTION - update ball coordinates based on angle and speed
+// UPDATE_SCORE FUNCTION - increments score of player who has put a ball
+// in a hole (never called for white ball), then put the ball on the
+// player's panel
 //-----------------------------------------------------------------------------
-void    move_ball(int i) {
-    ball[i].d.x += cos((ball[i].angle) * PI / 180) * ball[i].speed ;
-    ball[i].d.y += sin((ball[i].angle) * PI / 180) * ball[i].speed ;
-    ball[i].p.x = ball[i].d.x;
-    ball[i].p.y = ball[i].d.y;
-    ball[i].c.x = (ball[i].p.x) + 15;
-    ball[i].c.y = (ball[i].p.y) + 15;
+void    update_score(int i) {
+    sem_wait(&mutex);                           //start critical section
+    if (user.player == 1) {
+        set_ball_parameters(347 + (34 * user.p1_score), 8, &ball[i]);
+        user.p1_score ++;
+    }
+    else {
+        set_ball_parameters(347 + (34 * user.p2_score), 762, &ball[i]);
+        user.p2_score ++;
+    }
+    ball[i].alive = false;                      //disable ball controls
+    sem_post(&mutex);                           //end critical section
 }
 //-----------------------------------------------------------------------------
-// CHECK_FOR_DEADLINES FUNCTION - print on stdout if a task has a deadline
+// C_HOLE FUNCTION - check if coordinate of a ball are in the range of
+// the specified hole, if so update score of current player
 //-----------------------------------------------------------------------------
-void    check_for_deadlines(int i) {
-    if (ptask_deadline_miss())
-        printf("Deadline for task: %i\n",i);
+void    c_hole(int sx, int dx, int up, int down, int i) {
+    if (ball[i].c.x >= sx && ball[i].c.x <= dx) {
+        if (ball[i].c.y >= up && ball[i].c.y <= down) {
+            //if white ball, don't update score and put it out of the table,
+            //until all balls are still (then it will be replaced on table)
+            if(i == 0){
+                set_ball_parameters(3000,3000,&ball[0]);
+                ball[i].alive = false;
+            }
+            else
+                update_score(i);
+        }
+    }
 }
