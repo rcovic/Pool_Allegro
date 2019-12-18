@@ -1,6 +1,7 @@
 //-----------------------------------------------------------------------------
 // INIT.H - header file of INIT.C
-// Contains costants, global data structures and task declarations.
+// Contains costants, global data structures, bitmaps, fonts, global variables,
+// semaphores, global functions and task declarations.
 //-----------------------------------------------------------------------------
 #if !defined INIT_H
 #define INIT_H
@@ -17,7 +18,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <semaphore.h>
-
+//internal libraries
 #include "ptask.h"
 #include "pmutex.h"
 //-----------------------------------------------------------------------------
