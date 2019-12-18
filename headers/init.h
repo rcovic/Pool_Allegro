@@ -64,6 +64,7 @@
 #define     RELEASE         2           //here cue moves towards white ball
 #define     WAKE_BALL       3           //here user give parameters to white
 #define     WAIT            4           //here user wait for all balls to stop
+#define		END				5			//when a player wins user can restart
 //-----------------------------------------------------------------------------
 // SCHEDULER CONSTANTS
 //-----------------------------------------------------------------------------
@@ -75,7 +76,7 @@
 #define     DL_B            26          //ball deadline in milliseconds
 #define     DL_U            28          //user deadline in milliseconds
 //-----------------------------------------------------------------------------
-// DATA STRUCTURES
+// GLOBAL DATA STRUCTURES
 //-----------------------------------------------------------------------------
 typedef struct  point   {               //used to store x and y coordinates
     int     x;
@@ -93,6 +94,7 @@ typedef struct  ball_struct {           //contains parameter of a ball
     vector  d;                          //stores x,y direction of ball
     double  angle;                      //direction angle in range 0-360
     double  speed;                      //current speed of ball
+    double  friction;                   //friction coefficient
     bool    alive;                      //true if ball is still on the table
     bool    still;                      //true if ball is not moving
     vector  ld;                         //storex x,y left direction of ball
@@ -113,9 +115,11 @@ typedef struct  user_struct {           //contain user states and cue params
     int     player;                     //indicates which player is playing
     int     p1_score;                   //current score of player 1
     int     p2_score;                   //current score of player 2
+    point   m;                          //stores x,y mouse coordinates
+    bool    aim_key;                    //true if user uses amatorial mode
 }   user_struct;
 //-----------------------------------------------------------------------------
-// BITMAP OBJECT DECLARATIONS
+// BITMAP OBJECT DECLARATIONS AND FONT
 //-----------------------------------------------------------------------------
 extern  BITMAP*     parquet_bmp;        //bitmap for the background
 extern  BITMAP*     pool_table_bmp;     //bitmap for the pool table
@@ -123,6 +127,9 @@ extern  BITMAP*     ball_panel_bmp;     //bitmap for top and bot ball panel
 extern  BITMAP*     ball_bmp[N_BALLS];  //16 bitmaps for 16 balls
 extern  BITMAP*     cue_bmp;            //bitmap for user cue
 extern  BITMAP*     buffer_bmp;         //buffer bitmap
+extern  FONT*		stats_font;         //font for player stats
+extern	FONT*		win_font;           //font for winner player message
+extern	FONT*		restart_font;       //font for restart message
 //-----------------------------------------------------------------------------
 // GLOBAL VARIABLE DECLARATIONS
 //-----------------------------------------------------------------------------
@@ -135,9 +142,11 @@ extern  user_struct user;               //contain user states and cue params
 extern  sem_t       mutex;              //for mutual exclusion
 extern  sem_t       ball_sem[N_BALLS];  //for synchronize ball tasks
 //-----------------------------------------------------------------------------
-// FUNCTION DECLARATIONS
+// EXTERN FUNCTION DECLARATIONS
 //-----------------------------------------------------------------------------
-extern  void        init_game(void);    //init game used in INIT.C
+extern  void        init_game(bool restart);    //init game used in INIT.C
+extern  void        set_ball_parameters(int x, int y, ball_struct* b);
+extern  void        init_user(void);            //reset user after each turn
 //-----------------------------------------------------------------------------
 // TASK FUNCTION DECLARATIONS
 //-----------------------------------------------------------------------------
