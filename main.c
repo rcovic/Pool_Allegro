@@ -9,7 +9,7 @@ int main(void){
 	int	i = 0;				//ball index
 
 	//initialize game
-	init_game();
+	init_game(false);
 
 	//create render task							
 	ptask_create_edf(render_task, P, RT_R, DL_R, NOW);
