@@ -1,10 +1,14 @@
 //-----------------------------------------------------------------------------
-// INIT.C - provides methods to initialize data parameters
+// INIT.C - provides methods to initialize allegro environment, ptask library
+// semaphores, bitmaps and fonts and global variables used for pool table
+// balls and user. Initialization is made through the INIT_GAME function
+// who is called from the MAIN when game is executed before creating tasks
+// and if we press the enter key on the ending screen to reset all
 //-----------------------------------------------------------------------------
 #include "init.h"
 
 //-----------------------------------------------------------------------------
-// BITMAP OBJECTS DEFINITION
+// BITMAP OBJECTS DEFINITION AND FONT
 //-----------------------------------------------------------------------------
 BITMAP*     parquet_bmp;        	//bitmap for the background
 BITMAP*     pool_table_bmp;     	//bitmap for the pool table
@@ -12,6 +16,9 @@ BITMAP*     ball_panel_bmp;     	//bitmap for top and bot ball panel
 BITMAP*     ball_bmp[N_BALLS];  	//16 bitmaps for 16 balls
 BITMAP*     cue_bmp;            	//bitmap for user cue
 BITMAP*     buffer_bmp;         	//buffer bitmap
+FONT*		stats_font;				//font for player stats
+FONT*		win_font;				//font for winner player message
+FONT*		restart_font;			//font for restart message
 //-----------------------------------------------------------------------------
 // GLOBAL VARIABLES DEFINITION
 //-----------------------------------------------------------------------------
@@ -34,7 +41,7 @@ void    init_environment(void)  {
     show_mouse(screen);
     install_keyboard();
     ptask_init(SCHED_OTHER, GLOBAL, NO_PROTOCOL);
-}
+}	
 //-----------------------------------------------------------------------------
 // INIT_SEMAPHORES FUNCTION: initialize mutex and private semaphores
 //-----------------------------------------------------------------------------
@@ -47,11 +54,13 @@ void	init_semaphores(void){
 }
 //-----------------------------------------------------------------------------
 // INIT_BITMAPS FUNCTION: load bitmaps from img folder to bitmap objects
+// and font from font folder
 //-----------------------------------------------------------------------------
-void    init_bitmaps(void)  {
+void    init_bitmaps_fonts(void)  {
     char    ballFilename[255];      	//stores i-ball filename
     int     i;                      	//ball index
 
+	//bitmaps initialization
     parquet_bmp = load_bitmap("img/parquet.bmp", NULL);
     pool_table_bmp = load_bitmap("img/poolTable.bmp", NULL);
     ball_panel_bmp = load_bitmap("img/statsPanel.bmp",NULL);
@@ -63,6 +72,10 @@ void    init_bitmaps(void)  {
     }
 
     buffer_bmp = create_bitmap(RES_X, RES_Y);
+	//fonts initalization
+	stats_font = load_font("Georgia.pcx",NULL, NULL);
+	win_font = load_font("ArialBlack.pcx",NULL, NULL);
+    restart_font = load_font("Arial.pcx",NULL, NULL);
 }
 
 //-----------------------------------------------------------------------------
