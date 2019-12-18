@@ -125,3 +125,46 @@ void set_right(point *b, int x, int y, double m){
 		b->x=RIGHT_X-2;
 		b->y = (((b->x - x)*m) + y) ;
 }
+//-----------------------------------------------------------------------------
+// LINE_BORDER_COLLISION: calculate on which border line has to stop, based
+// on the current line angle, updating end x,y coordinates for render function
+//-----------------------------------------------------------------------------
+void line_border_coll(point* b, int x, int y, double d, double m){
+    double e;                                 //angle between hole and start
+    point tmp;                                //tmp point to get distance
+    double dist;                              //dist between hole and start
+
+    if(d >= 270 && d <= 360){                        
+        dist = get_dist(&tmp, hole[2].x, hole[2].y, x, y);
+        e = get_angle(tmp, dist);             
+        if(d < e || e == 0)
+            set_top(b,x, y,m);
+        else
+            set_right(b,x, y,m);
+
+    }
+    else if(d >= 90 && d < 180){                        
+        dist = get_dist(&tmp, hole[3].x, hole[3].y, x, y);
+        e = get_angle(tmp, dist);             
+        if(d < e)
+            set_bot(b,x, y,m);
+        else
+            set_left(b,x, y,m);
+    }
+    else if(d < 90){                        
+        dist = get_dist(&tmp, hole[5].x, hole[5].y, x, y);
+        e = get_angle(tmp, dist);             
+        if(d < e)
+            set_right(b,x, y,m);
+        else
+            set_bot(b,x, y,m);
+    }
+    else{                        
+        dist = get_dist(&tmp, hole[0].x, hole[0].y, x, y);
+        e = get_angle(tmp, dist);             
+        if(d < e)
+            set_left(b,x, y,m);
+        else
+            set_top(b,x, y,m);
+    }
+}
