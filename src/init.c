@@ -144,7 +144,6 @@ void    init_user() {
 	user.cue_angle = 0;
 	user.wd = -30;
 	user.shot_power = 0;
-	user.aim_key = false;
 }
 //-----------------------------------------------------------------------------
 // INIT_USER_SCORES FUNCTION: set both user scores to 0
