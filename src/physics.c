@@ -193,7 +193,7 @@ int line_ball_intersects(point* b, int x, int y, double m){
         int yP = ball[i].c.y;
 		dist = (abs(yP - (m * xP + q))) / (sqrt(1 + pow(m, 2)));
 		//if (centre ball point)_line distance is less than radius, intersects
-		if(dist <= 15){           
+		if(dist <= 15 && ball[i].alive){           
             dist2 = get_dist(&tmp, b->x,b->y, x, y);
             d = get_angle(tmp, dist2);
             dist2 = get_dist(&tmp, xP,yP, x, y);
