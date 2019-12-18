@@ -1,12 +1,22 @@
 //-----------------------------------------------------------------------------
 // PHYSICS.C Implementation of physics methods used to calculate physics
-// parameters, like distances, angles ecc.
+// parameters, like distances, angles and coordinates to draw aiming line
 //-----------------------------------------------------------------------------
 #include "init.h"
 #include "physics.h"
+
+//-----------------------------------------------------------------------------
+// ADJUST_ANGLE FUNCTION: set angle between 0 and 360 degrees
+//-----------------------------------------------------------------------------
+void    adjust_angle(double* angle) {
+    if (*angle < 0)
+        *angle += 360;
+    else if (*angle >= 360)
+        *angle -= 360;
+}
 //-----------------------------------------------------------------------------
 // GET_DISTANCE FUNCTION: get distance between 2 points saving x,y 
-// coordinates of projection of a point
+// coordinates of projection of a point along x axis
 //-----------------------------------------------------------------------------
 double  get_dist(point* p3, int x1, int y1, int x2, int y2) {
     double    distance;                             //stores return value
