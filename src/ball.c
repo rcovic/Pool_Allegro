@@ -173,3 +173,42 @@ void    check_for_deadlines(int i) {
 	if (ptask_deadline_miss())
         printf("Deadline for task: %i\n",i);
 }
+//-----------------------------------------------------------------------------
+// BALL_TASK FUNCTION - implementation of ball task who periodically updates 
+// ball parameters based on collisions, speed left and current position
+//-----------------------------------------------------------------------------
+void    ball_task(void) {
+    int     tid = ptask_get_index() - 1;        //assign unique index to task
+    int     coll;                               //count ball collisions
+    int     i;                                  //balls index
+
+    ball[tid].friction = 0.01;                  //set friction coefficient
+    //Code executed periodically
+    while (1) {
+        coll = 0;      
+        reset_collision_parameters(tid);        //handle ball collisions
+        check_hole_collision(tid);
+        check_border_collision(tid);
+        coll = check_ball_collision(tid);
+        sync_ball_task(tid);
+        if (coll > 0)                           //change params if collision
+            update_ball_parameters(tid);
+
+        if (!ball[tid].still) {                 //ball movement if not still    
+            move_ball(tid);
+            ball[tid].speed -= ball[tid].friction;
+            ball[tid].friction += 0.001;        //dinamic friction augments
+        }
+
+        if (ball[tid].speed <= 0) {             //set ball as still                         
+            ball[tid].still = true;
+            ball[tid].friction = 0.01;          //reset friction for next shot
+        }
+        
+        for (i=0; i<N_BALLS; i++)               //resolve compenetration bug
+            ball[tid].cf[i]--;
+
+        check_for_deadlines(tid);               //print eventual ball deadline
+        ptask_wait_for_period();                //synchronize task with period
+    }
+}
