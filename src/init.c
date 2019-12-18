@@ -73,9 +73,9 @@ void    init_bitmaps_fonts(void)  {
 
     buffer_bmp = create_bitmap(RES_X, RES_Y);
 	//fonts initalization
-	stats_font = load_font("Georgia.pcx",NULL, NULL);
-	win_font = load_font("ArialBlack.pcx",NULL, NULL);
-    restart_font = load_font("Arial.pcx",NULL, NULL);
+	stats_font = load_font("fonts/Georgia.pcx",NULL, NULL);
+	win_font = load_font("fonts/ArialBlack.pcx",NULL, NULL);
+    restart_font = load_font("fonts/Arial.pcx",NULL, NULL);
 }
 //-----------------------------------------------------------------------------
 // INIT_POOL_TABLE FUNCTION: calculate and stores all hole positins
