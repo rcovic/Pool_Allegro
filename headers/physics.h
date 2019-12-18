@@ -5,14 +5,14 @@
 #define PHYSICS_H
 
 //-----------------------------------------------------------------------------
-// INCLUDE LIBRARIES - Just needs of INIT.H library who contains all
+// INCLUDE LIBRARIES - Just needs of INIT.H library who contains all others
 //-----------------------------------------------------------------------------
 #include "init.h"
 
 //-----------------------------------------------------------------------------
 // MATH COSTANTS
 //-----------------------------------------------------------------------------
-#define     PI      3.1415          //PI constant to work with circles
+#define     PI      3.1415          //PI radians to work with circles
 //-----------------------------------------------------------------------------
 // PHYSICS FUNCTION DECLARATIONS
 //-----------------------------------------------------------------------------
@@ -28,7 +28,10 @@ extern  double  get_vector_angle(vector v, double module);
 extern  double  get_speed_given(int tid, double angle);
 //calculate bounce angle of a ball when collides with another ball
 extern  double  get_bounce_angle(double a1, double a2);
-
+//convert degree value to slope relative to x axis
+extern  double  degree_to_m(double angle);
+//check if line collides with any of table's border
+extern  void    line_border_collision(point* b, int x, int y, double d, double m);
+//check if line collides with a ball
+extern  int     line_ball_intersects(point* b, int x, int y, double m);
 #endif
-
-
