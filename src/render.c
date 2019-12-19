@@ -73,10 +73,8 @@ void	draw_line() {
 // game by pressin Esc key
 //-----------------------------------------------------------------------------
 void	draw_ending_screen() {
-	int		white;								//white color of message
 	char	restart_msg[] = "Press Enter to play again, ESC to quit";
 
-	white = makecol(255, 255, 255);
 	draw_sprite(buffer_bmp, parquet_bmp, 0, 0);	//draw background
 	//displays winner message based on which one has an higher score
 	if (user.p1_score > user.p2_score)
